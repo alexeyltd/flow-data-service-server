@@ -5,6 +5,12 @@
 *.so
 *.dylib
 
+.idea/
+ts/*
+!ts/.gitkeep
+models.ts
+config.yaml
+
 # Test binary, built with `go test -c`
 *.test
 
