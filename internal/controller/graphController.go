@@ -32,6 +32,9 @@ func (c *GraphController) GetGraph(g *gin.Context) {
 	res, e := c.GraphService.GetGraph(g, obj)
 	if e != nil {
 		_ = g.Error(e)
+		g.JSON(http.StatusBadRequest, gin.H{
+			"error": e.Error(),
+		})
 		return
 	}
 	g.JSON(http.StatusOK, res)

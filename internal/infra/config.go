@@ -14,8 +14,8 @@ func NewConfig() (*AppConfig, error) {
 	viper.SetDefault("DSN", "host=localhost user=postgres password=postgres dbname=flow port=5432 sslmode=disable TimeZone=Europe/Moscow")
 	viper.SetDefault("HostName", "localhost:8080")
 	viper.SetDefault("HttpAddr", ":8080")
-	viper.SetDefault("Development", false)
-	viper.SetDefault("ShowSql", false)
+	viper.SetDefault("Development", true)
+	viper.SetDefault("ShowSql", true)
 
 	_ = viper.BindEnv("DSN")
 	_ = viper.BindEnv("HostName")
