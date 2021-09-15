@@ -43,7 +43,6 @@ func (g *graphRepositorySuite) SetupSuite() {
 
 func (g *graphRepositorySuite) TestRepositoryGet() {
 	p := &common.ProjectModel{ProjectId: 1, Id: 1}
-
 	g.mock.ExpectBegin()
 	g.mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT * FROM "db_graphs" WHERE project_id = $1 and id = $2 ORDER BY "db_graphs"."id" LIMIT 1`)).
@@ -55,7 +54,7 @@ func (g *graphRepositorySuite) TestRepositoryGet() {
 	gr := new(graph.DBGraph)
 	err := g.graphRepository.GetProjectObject(context.Background(), p, gr)
 	require.NoError(g.T(), err)
-	require.Equal(g.T(), uint(p.GetId()), gr.Id)
+	require.Equal(g.T(), p.GetId(), gr.Id)
 }
 
 func (g *graphRepositorySuite) AfterTest(_, _ string) {
