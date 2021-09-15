@@ -1,6 +1,6 @@
 package graph
 
-import "autoflow/pkg/common"
+import "flow-data-service-server/pkg/models/common"
 
 type DBEventCard struct {
 	GraphObject
