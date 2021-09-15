@@ -24,6 +24,5 @@ func (u *MockGraphRepository) SaveProjectObject(ctx context.Context, object comm
 	if args.Error(0) != nil {
 		return gorm.ErrInvalidData
 	}
-	entity = &common.ProjectModel{ProjectId: 1, Id: 1}
 	return nil
 }
