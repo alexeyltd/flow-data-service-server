@@ -9,6 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
+//TODO how to make it automatic
+
+// go:generate mockgen -destination=./internal/repository/mock/MockGraphRepository_gen.go -package=mock flow-data-service-server/internal/repository GraphRepository
+
 type GraphRepository interface {
 	ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error)
 	GetProjectObject(ctx context.Context, object common.ProjectObject, entity common.ProjectObject) error
