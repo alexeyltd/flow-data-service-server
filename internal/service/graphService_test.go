@@ -7,6 +7,7 @@ import (
 	"flow-data-service-server/pkg/models/graph"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -47,4 +48,25 @@ func TestSaveGraph(t *testing.T) {
 
 	mockRepo.AssertExpectations(t)
 	assert.Equal(t, uint(1), gr.GetId())
+}
+
+func TestDeleteGraph(t *testing.T) {
+	mockRepo := new(repository.MockGraphRepository)
+
+	p := &common.ProjectModel{ProjectId: 1, Id: 1}
+	dbGraph := &graph.DBGraph{ProjectModel: *p}
+
+	mockRepo.On("DeleteProjectObject", context.Background(), p, new(graph.DBGraph)).
+		Return(nil).Run(func(args mock.Arguments) {
+		arg := args.Get(2).(*graph.DBGraph)
+		arg.ProjectModel = *p
+	})
+
+	testService := NewGraphServiceImpl(mockRepo)
+
+	er := testService.DeleteGraph(context.Background(), p)
+
+	mockRepo.AssertExpectations(t)
+	require.NoError(t, er)
+	assert.Equal(t, uint(1), dbGraph.GetId())
 }
