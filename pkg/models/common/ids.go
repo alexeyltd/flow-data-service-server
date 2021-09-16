@@ -18,7 +18,6 @@ type SpacedObject interface {
 	GetProjectId() uint
 }
 
-//TODO what is that?
 var _ ProjectObject = (*ProjectModel)(nil)
 var _ SpacedObject = (*ProjectSpace)(nil)
 

@@ -31,5 +31,4 @@ type Object interface {
 	GetGraphId() uint
 }
 
-//TODO what is that?
 var _ Object = (*GraphObject)(nil)
