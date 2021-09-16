@@ -26,3 +26,11 @@ func (u *MockGraphRepository) SaveProjectObject(ctx context.Context, object comm
 	}
 	return nil
 }
+
+func (u *MockGraphRepository) DeleteProjectObject(ctx context.Context, object *common.ProjectModel, entity common.ProjectObject) error {
+	args := u.Called(ctx, object, entity)
+	if args.Error(0) != nil {
+		return gorm.ErrInvalidData
+	}
+	return nil
+}

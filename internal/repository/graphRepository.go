@@ -10,6 +10,7 @@ import (
 type GraphRepository interface {
 	GetProjectObject(ctx context.Context, object common.ProjectObject, entity common.ProjectObject) error
 	SaveProjectObject(ctx context.Context, save common.ProjectObject, entity common.ProjectObject) error
+	DeleteProjectObject(ctx context.Context, id *common.ProjectModel, entity common.ProjectObject) error
 }
 
 type GraphRepositoryImpl struct {
@@ -67,6 +68,30 @@ func (g *GraphRepositoryImpl) SaveProjectObject(ctx context.Context, save common
 		})
 	if err != nil {
 		g.logger.Error("saving project object failed", zap.Error(err), zap.Any("save", save))
+		return err
+	}
+	return nil
+}
+
+func (g *GraphRepositoryImpl) DeleteProjectObject(ctx context.Context, id *common.ProjectModel, entity common.ProjectObject) error {
+	err := g.db.
+		Session(&gorm.Session{
+			Context: ctx,
+		}).
+		Transaction(func(tx *gorm.DB) error {
+			r := tx.Where(
+				"project_id = ? and id = ?",
+				id.GetProjectId(),
+				id.GetId(),
+			).Delete(entity)
+
+			if r.Error != nil {
+				return r.Error
+			}
+			return nil
+		})
+	if err != nil {
+		g.logger.Error("deleting project object failed", zap.Error(err))
 		return err
 	}
 	return nil

@@ -54,3 +54,18 @@ func (c *GraphController) SaveGraph(g *gin.Context) {
 	}
 	g.JSON(http.StatusOK, res)
 }
+
+func (c *GraphController) DeleteGraph(g *gin.Context) {
+	obj := new(common.ProjectModel)
+	err := g.BindJSON(obj)
+	if err != nil {
+		_ = g.Error(err)
+		return
+	}
+	err = c.GraphService.DeleteGraph(g, obj)
+	if err != nil {
+		_ = g.Error(err)
+		return
+	}
+	g.JSON(http.StatusOK, "ok")
+}

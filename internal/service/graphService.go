@@ -10,6 +10,7 @@ import (
 type GraphService interface {
 	GetGraph(c context.Context, r *common.ProjectModel) (*graph.DBGraph, error)
 	SaveGraph(c context.Context, data *graph.DBGraph) (*graph.DBGraph, error)
+	DeleteGraph(c context.Context, request *common.ProjectModel) error
 }
 
 type GraphServiceImpl struct {
@@ -38,4 +39,8 @@ func (g *GraphServiceImpl) SaveGraph(c context.Context, data *graph.DBGraph) (*g
 		return nil, err
 	}
 	return entity, nil
+}
+
+func (g *GraphServiceImpl) DeleteGraph(c context.Context, request *common.ProjectModel) error {
+	return g.graphRepository.DeleteProjectObject(c, request, &graph.DBGraph{})
 }

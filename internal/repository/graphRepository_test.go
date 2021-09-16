@@ -57,6 +57,47 @@ func (g *graphRepositorySuite) TestRepositoryGet() {
 	require.Equal(g.T(), p.GetId(), gr.Id)
 }
 
+func (g *graphRepositorySuite) TestRepositorySave() {
+	p := &common.ProjectModel{ProjectId: 1, Id: 1}
+	gr := &graph.DBGraph{
+		ProjectModel: *p,
+		DataUI:       common.DataUI{Name: "Telegram Test Postman"},
+	}
+	g.mock.ExpectBegin()
+	g.mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT * FROM "db_graphs"`)).
+		WithArgs(p.GetProjectId(), p.GetId(), p.GetId()).
+		WillReturnRows(sqlmock.NewRows([]string{"project_id", "id", "name", "ui", "counter"}).
+			AddRow(1, 1, "Telegram Test Postman", nil, 0))
+	g.mock.ExpectExec(regexp.QuoteMeta(
+		`UPDATE "db_graphs"`)).
+		WithArgs(p.GetId(), p.GetProjectId(), p.GetProjectId(), p.GetId(), p.GetId(), p.GetId()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	g.mock.ExpectCommit()
+
+	err := g.graphRepository.SaveProjectObject(context.Background(), p, gr)
+	require.NoError(g.T(), err)
+	require.Equal(g.T(), p.GetId(), gr.Id)
+}
+
+func (g *graphRepositorySuite) TestRepositoryDelete() {
+	p := &common.ProjectModel{ProjectId: 1, Id: 1}
+	gr := &graph.DBGraph{
+		ProjectModel: *p,
+		DataUI:       common.DataUI{Name: "Telegram Test Postman"},
+	}
+	g.mock.ExpectBegin()
+	g.mock.ExpectExec(regexp.QuoteMeta(
+		`DELETE FROM "db_graphs"`)).
+		WithArgs(p.GetProjectId(), p.GetId(), p.GetId()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	g.mock.ExpectCommit()
+
+	err := g.graphRepository.DeleteProjectObject(context.Background(), p, gr)
+	require.NoError(g.T(), err)
+	require.Equal(g.T(), p.GetId(), gr.Id)
+}
+
 func (g *graphRepositorySuite) AfterTest(_, _ string) {
 	require.NoError(g.T(), g.mock.ExpectationsWereMet())
 }
