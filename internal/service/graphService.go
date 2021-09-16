@@ -5,9 +5,11 @@ import (
 	"flow-data-service-server/internal/repository"
 	"flow-data-service-server/pkg/models/common"
 	"flow-data-service-server/pkg/models/graph"
+	"flow-data-service-server/pkg/models/storage"
 )
 
 type GraphService interface {
+	ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error)
 	GetGraph(c context.Context, r *common.ProjectModel) (*graph.DBGraph, error)
 	SaveGraph(c context.Context, data *graph.DBGraph) (*graph.DBGraph, error)
 	DeleteGraph(c context.Context, request *common.ProjectModel) error
@@ -21,6 +23,14 @@ func NewGraphServiceImpl(graphRepository repository.GraphRepository) *GraphServi
 	return &GraphServiceImpl{
 		graphRepository: graphRepository,
 	}
+}
+
+func (g *GraphServiceImpl) ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error) {
+	res, err := g.graphRepository.ListGraph(c, r)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (g *GraphServiceImpl) GetGraph(c context.Context, r *common.ProjectModel) (*graph.DBGraph, error) {

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"flow-data-service-server/pkg/models/common"
 	"flow-data-service-server/pkg/models/graph"
+	"flow-data-service-server/pkg/models/storage"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -39,6 +40,22 @@ func (g *graphRepositorySuite) SetupSuite() {
 	require.NoError(g.T(), err)
 
 	g.graphRepository = NewGraphRepositoryImpl(g.db, zap.L().Sugar())
+}
+
+func (g *graphRepositorySuite) TestRepositoryList() {
+	r := &storage.ListGraphRequest{
+		ProjectId: []uint{1},
+	}
+	g.mock.ExpectBegin()
+	g.mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT * FROM "db_graphs"`)).
+		WithArgs(r.ProjectId[0]).
+		WillReturnRows(sqlmock.NewRows([]string{"project_id", "id", "name", "ui", "counter"}).
+			AddRow(1, 1, "Telegram Test Postman", nil, 0))
+	g.mock.ExpectCommit()
+	res, err := g.graphRepository.ListGraph(context.Background(), r)
+	require.NoError(g.T(), err)
+	require.Equal(g.T(), r.ProjectId[0], res.Graphs[0].GetId())
 }
 
 func (g *graphRepositorySuite) TestRepositoryGet() {

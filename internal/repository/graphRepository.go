@@ -3,11 +3,14 @@ package repository
 import (
 	"context"
 	"flow-data-service-server/pkg/models/common"
+	"flow-data-service-server/pkg/models/graph"
+	"flow-data-service-server/pkg/models/storage"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
 type GraphRepository interface {
+	ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error)
 	GetProjectObject(ctx context.Context, object common.ProjectObject, entity common.ProjectObject) error
 	SaveProjectObject(ctx context.Context, save common.ProjectObject, entity common.ProjectObject) error
 	DeleteProjectObject(ctx context.Context, id *common.ProjectModel, entity common.ProjectObject) error
@@ -23,6 +26,30 @@ func NewGraphRepositoryImpl(db *gorm.DB, logger *zap.SugaredLogger) *GraphReposi
 		db:     db,
 		logger: logger,
 	}
+}
+
+func (g *GraphRepositoryImpl) ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error) {
+	var graphs []graph.DBGraph
+	err := g.db.
+		Session(&gorm.Session{Context: c}).
+		Transaction(func(tx *gorm.DB) error {
+			res := tx.
+				Where("project_id in ?", r.ProjectId).
+				Find(&graphs)
+
+			if res.Error != nil {
+				return res.Error
+			}
+			return nil
+		})
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &storage.ListGraphResponse{
+		Graphs: graphs,
+	}, nil
 }
 
 func (g *GraphRepositoryImpl) GetProjectObject(ctx context.Context, object common.ProjectObject, entity common.ProjectObject) error {

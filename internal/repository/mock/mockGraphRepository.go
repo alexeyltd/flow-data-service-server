@@ -2,13 +2,23 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"flow-data-service-server/pkg/models/common"
+	"flow-data-service-server/pkg/models/storage"
 	"github.com/stretchr/testify/mock"
 	"gorm.io/gorm"
 )
 
 type MockGraphRepository struct {
 	mock.Mock
+}
+
+func (u *MockGraphRepository) ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error) {
+	args := u.Called(c, r)
+	if args.Error(1) != nil {
+		return nil, errors.New("error dirong saving")
+	}
+	return args.Get(0).(*storage.ListGraphResponse), nil
 }
 
 func (u *MockGraphRepository) GetProjectObject(ctx context.Context, object common.ProjectObject, entity common.ProjectObject) error {

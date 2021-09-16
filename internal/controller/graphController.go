@@ -4,6 +4,7 @@ import (
 	"flow-data-service-server/internal/service"
 	"flow-data-service-server/pkg/models/common"
 	"flow-data-service-server/pkg/models/graph"
+	"flow-data-service-server/pkg/models/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,6 +17,21 @@ func NewGraphController(graphService service.GraphService) *GraphController {
 	return &GraphController{
 		GraphService: graphService,
 	}
+}
+
+func (c *GraphController) ListGraph(g *gin.Context) {
+	obj := new(storage.ListGraphRequest)
+	err := g.BindJSON(obj)
+	if err != nil {
+		_ = g.Error(err)
+		return
+	}
+	res, err := c.GraphService.ListGraph(g, obj)
+	if err != nil {
+		_ = g.Error(err)
+		return
+	}
+	g.JSON(http.StatusOK, res)
 }
 
 func (c *GraphController) GetGraph(g *gin.Context) {
