@@ -8,6 +8,8 @@ import (
 	"flow-data-service-server/pkg/models/storage"
 )
 
+// go:generate mockgen -destination=./internal/service/mock/MockGraphRepository_gen.go -package=service flow-data-service-server/internal/service GraphService
+
 type GraphService interface {
 	ListGraph(c context.Context, r *storage.ListGraphRequest) (*storage.ListGraphResponse, error)
 	GetGraph(c context.Context, r *common.ProjectModel) (*graph.DBGraph, error)
